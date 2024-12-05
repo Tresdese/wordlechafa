@@ -206,11 +206,7 @@ public class Juego extends JFrame {
                 guessFields[row][col].setBackground(Color.BLACK);
             }
         }
-<<<<<<< HEAD
-        this.wordToGuess = PalabrasBD.consultarPalabra();
-=======
         this.wordToGuess = GestionDB.consultarPalabra().toUpperCase();
->>>>>>> 4739cea3326e2cb20e0ab8699626a9e50fa96af6
         if (this.wordToGuess == null) {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }

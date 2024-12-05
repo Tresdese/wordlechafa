@@ -34,12 +34,8 @@ public class CongratulationsWindow extends JDialog {
         styleButton(playAgainButton);
         playAgainButton.addActionListener(e -> {
             parent.dispose();
-<<<<<<< HEAD
-            new Juego(PalabrasBD.consultarPalabra().toUpperCase());
-=======
-            String newWord = GestionDB.consultarPalabra().toUpperCase();
+            String newWord = PalabrasBD.consultarPalabra().toUpperCase();
             new Juego(newWord);
->>>>>>> 4739cea3326e2cb20e0ab8699626a9e50fa96af6
             dispose();
         });
 
