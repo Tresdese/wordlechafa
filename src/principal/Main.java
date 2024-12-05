@@ -1,21 +1,19 @@
 package principal;
+
 import Graficas.Juego;
+import db.GestionDB;
 import javax.swing.SwingUtilities;
-
-
-//import db.GestionDB;
-import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
-        // Conexion a la base de datos
+        // Obtener la palabra a adivinar de la base de datos y convertirla a mayúsculas
+        final String palabraAdivinar = GestionDB.consultarPalabra();
+        if (palabraAdivinar == null) {
+            throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
+        }
+        final String palabraAdivinarMayusculas = palabraAdivinar.toUpperCase(); // Convertir a mayúsculas
 
-        System.out.println("HOla DIEGO DIME QUE FINCIONO PLS");
-        // interfaz gracias, pero no me salio la interfaz JAJAJA
-        String palabraAdivinar = "apple"; // Ejemplo de palabra a adivinar
-        SwingUtilities.invokeLater(() -> new Juego(palabraAdivinar));
-        //GestionDB.consultarPalabra();
-
-        //System.out.println(palabraAdivinar);
+        // Iniciar el juego con la palabra obtenida
+        SwingUtilities.invokeLater(() -> new Juego(palabraAdivinarMayusculas));
     }
 }

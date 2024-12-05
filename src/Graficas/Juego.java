@@ -1,4 +1,10 @@
+// src/Graficas/Juego.java
 package Graficas;
+
+import db.GestionDB;
+import extras.EstadoLetra;
+import funciones.ValidarObjeto;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -6,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class Juego extends JFrame {
     private static final int filas = 6;
@@ -19,13 +26,14 @@ public class Juego extends JFrame {
 
     public Juego(String wordToGuess) {
         this.wordToGuess = wordToGuess;
+        System.out.println("Palabra a adivinar: " + this.wordToGuess); // Print the word to guess
         initializeUI();
     }
 
     private void initializeUI() {
         setTitle("Wordle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 800); // Tamaño ajustado de la ventana
+        setSize(600, 800); // Tamaño ajustado de la ventana
         setResizable(false); // Deshabilita el redimensionamiento
         setLayout(new BorderLayout());
         getContentPane().setBackground(Color.DARK_GRAY); // Establecer fondo gris oscuro
@@ -44,11 +52,11 @@ public class Juego extends JFrame {
             for (int col = 0; col < columnas; col++) {
                 guessFields[row][col] = new JTextField();
                 guessFields[row][col].setHorizontalAlignment(JTextField.CENTER);
-                guessFields[row][col].setFont(new Font("SansSerif", Font.BOLD, 20));
+                guessFields[row][col].setFont(new Font("SansSerif", Font.BOLD, 24));
                 guessFields[row][col].setEditable(false);
                 guessFields[row][col].setBackground(Color.BLACK);
                 guessFields[row][col].setForeground(Color.WHITE);
-                guessFields[row][col].setBorder(new EmptyBorder(5, 5, 5, 5)); // Separación leve dentro de las celdas
+                guessFields[row][col].setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // Borde gris
                 guessPanel.add(guessFields[row][col]);
             }
         }
@@ -70,6 +78,7 @@ public class Juego extends JFrame {
             keyboardButtons[i].setFont(new Font("SansSerif", Font.BOLD, 20));
             keyboardButtons[i].setBackground(Color.GRAY); // Color gris oscuro para las teclas
             keyboardButtons[i].setForeground(Color.WHITE); // Color de texto blanco para las teclas
+            keyboardButtons[i].setFocusPainted(false); // Eliminar el borde de enfoque
             keyboardButtons[i].addActionListener(new KeyboardButtonListener());
             keyboardPanel.add(keyboardButtons[i]);
         }
@@ -77,7 +86,7 @@ public class Juego extends JFrame {
         add(guessPanel, BorderLayout.CENTER);
         add(keyboardPanel, BorderLayout.SOUTH);
 
-        //KeyListener para capturar la entrada desde el teclado
+        // KeyListener para capturar la entrada desde el teclado
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -107,6 +116,9 @@ public class Juego extends JFrame {
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         setVisible(true);
+
+        // Request focus on the JFrame
+        requestFocusInWindow();
     }
 
     private void handleEnterKey() {
@@ -115,19 +127,64 @@ public class Juego extends JFrame {
             for (int col = 0; col < columnas; col++) {
                 guess.append(guessFields[currentRow][col].getText());
             }
-            // checkGuess(guess.toString());
-            currentRow++;
-            currentCol = 0;
+            if (guess.length() == columnas) {
+                System.out.println("Word formed: " + guess.toString()); // Print the formed word
+                checkGuess(guess.toString());
+                currentRow++;
+                currentCol = 0;
 
-            if (currentRow == filas) {
-                showEndWindow();
+                if (currentRow == filas) {
+                    showEndWindow();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please enter a 5-letter word.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
 
+    private void checkGuess(String guess) {
+        System.out.println("Word to guess: " + wordToGuess); // Print the word to guess
+        System.out.println("Word formed: " + guess); // Print the formed word
+
+        List<EstadoLetra> estados = ValidarObjeto.validar(wordToGuess, guess);
+        boolean isCorrect = true;
+
+        for (int col = 0; col < guess.length(); col++) {
+            EstadoLetra estado = estados.get(col);
+            if (estado == EstadoLetra.correcta) {
+                guessFields[currentRow][col].setBackground(Color.GREEN);
+            } else if (estado == EstadoLetra.posIncorrecta) {
+                guessFields[currentRow][col].setBackground(Color.ORANGE);
+                isCorrect = false;
+            } else {
+                guessFields[currentRow][col].setBackground(Color.GRAY);
+                isCorrect = false;
+            }
+        }
+
+        if (isCorrect) {
+            showCongratulationsWindow();
+        }
+    }
+
+    private void showCongratulationsWindow() {
+        // Create a summary of the guesses
+        StringBuilder summary = new StringBuilder("<html>Resumen de intentos:<br>");
+        for (int row = 0; row < currentRow; row++) {
+            summary.append("Intento ").append(row + 1).append(": ");
+            for (int col = 0; col < columnas; col++) {
+                summary.append(guessFields[row][col].getText());
+            }
+            summary.append("<br>");
+        }
+        summary.append("</html>");
+
+        // Show the congratulations window
+        new CongratulationsWindow(this, summary.toString()).setVisible(true);
+    }
+
     private void showEndWindow() {
-        EndGameWindow endGameWindow = new EndGameWindow(this);
-        endGameWindow.setVisible(true);
+        JOptionPane.showMessageDialog(this, "Game Over! You've used all attempts.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void resetGame() {
@@ -136,7 +193,12 @@ public class Juego extends JFrame {
         for (int row = 0; row < filas; row++) {
             for (int col = 0; col < columnas; col++) {
                 guessFields[row][col].setText("");
+                guessFields[row][col].setBackground(Color.BLACK);
             }
+        }
+        this.wordToGuess = GestionDB.consultarPalabra();
+        if (this.wordToGuess == null) {
+            throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
     }
 
@@ -156,8 +218,4 @@ public class Juego extends JFrame {
             }
         }
     }
-
-
-
-
 }
