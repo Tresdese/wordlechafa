@@ -73,6 +73,8 @@ public class Jugador {
     }
 
     // Métodos
+
+    // Metodo para enviar la palabra a adivinar
     public String enviarPalabra(List<Character> letraList) {
         StringBuilder palabra = new StringBuilder();
         for (Character letra : letraList) {
@@ -94,17 +96,22 @@ public class Jugador {
     }
 
     // Método para registrar una derrota
-    public void registrarDerrota() {
+    public float registrarDerrota() {
         racha = 0;
         rachaPerdedora++;
         totalJugadas++;
-        actualizarWinRate();
+        float winrate1 = actualizarWinRate();
+        return winrate1;
     }
 
     // Método para actualizar el win rate
-    private void actualizarWinRate() {
+    private float actualizarWinRate() {
+        float winrate = 0.0f;
+
         if (totalJugadas > 0) {
-            winRate = (float) ganadas / totalJugadas * 100;
+            winrate = winRate = (float) ganadas / totalJugadas * 100;
         }
+        
+        return winrate;
     }
 }

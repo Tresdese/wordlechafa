@@ -1,13 +1,13 @@
 package principal;
 
 import Graficas.Juego;
-import db.GestionDB;
+import db.PalabrasBD;
 import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
         // Obtener la palabra a adivinar de la base de datos y convertirla a mayúsculas
-        final String palabraAdivinar = GestionDB.consultarPalabra();
+        final String palabraAdivinar = PalabrasBD.consultarPalabra();
         if (palabraAdivinar == null) {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
