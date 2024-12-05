@@ -1,48 +1,46 @@
+// src/funciones/ValidarObjeto.java
 package funciones;
 
 import extras.EstadoLetra;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ValidarObjeto {
-    private char letra;
-    private String palabraValida;
-    private EstadoLetra estado;
+    public static List<EstadoLetra> validar(String wordToGuess, String guess) {
+        List<EstadoLetra> estados = new ArrayList<>();
+        char[] wordToGuessArray = wordToGuess.toCharArray();
+        char[] guessArray = guess.toCharArray();
+        boolean[] guessedCorrectly = new boolean[guess.length()];
 
-    // Constructor
-    public ValidarObjeto(char letra, String palabraValida, EstadoLetra estado) {
-        this.letra = letra;
-        this.palabraValida = palabraValida;
-        this.estado = estado;
-    }
+        // First pass: mark correct positions
+        for (int i = 0; i < guess.length(); i++) {
+            if (guessArray[i] == wordToGuessArray[i]) {
+                estados.add(EstadoLetra.correcta);
+                guessedCorrectly[i] = true;
+                wordToGuessArray[i] = '\0'; // Mark as used
+            } else {
+                estados.add(null);
+            }
+        }
 
-    // Getters
-    public char getLetra() {
-        return letra;
-    }
+        // Second pass: mark incorrect positions
+        for (int i = 0; i < guess.length(); i++) {
+            if (estados.get(i) == null) {
+                boolean found = false;
+                for (int j = 0; j < wordToGuessArray.length; j++) {
+                    if (guessArray[i] == wordToGuessArray[j] && !guessedCorrectly[j]) {
+                        estados.set(i, EstadoLetra.posIncorrecta);
+                        wordToGuessArray[j] = '\0'; // Mark as used
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    estados.set(i, EstadoLetra.incorrecta);
+                }
+            }
+        }
 
-    public String getPalabraValida() {
-        return palabraValida;
-    }
-
-    public EstadoLetra getEstado() {
-        return estado;
-    }
-
-    // Setters
-    public void setLetra(char letra) {
-        this.letra = letra;
-    }
-
-    public void setPalabrasValidadas(String palabraValida) {
-        this.palabraValida = palabraValida;
-    }
-
-    public void setEstado(EstadoLetra estado) {
-        this.estado = estado;
-    }
-
-    public char validarLetra(char letra, String palabraValida) {
-        // Add logic to validate the letter
-        // For now, just return the input letter
-        return letra;
+        return estados;
     }
 }
