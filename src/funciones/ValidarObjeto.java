@@ -1,7 +1,6 @@
 package funciones;
 
 import extras.EstadoLetra;
-import java.util.List;
 
 public class ValidarObjeto {
     private char letra;
@@ -42,6 +41,8 @@ public class ValidarObjeto {
     }
 
     public char validarLetra(char letra, String palabraValida) {
-        
+        // Add logic to validate the letter
+        // For now, just return the input letter
+        return letra;
     }
 }

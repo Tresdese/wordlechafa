@@ -13,7 +13,7 @@ public class GestionDB {
        Connection conexion;
        String host = "jdbc:mysql://localhost/";
        String user = "root";
-       String pass = "admin";
+       String pass = "123456";
 
        System.out.println("Conectando a la base de datos...");
 

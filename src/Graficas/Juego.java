@@ -115,9 +115,28 @@ public class Juego extends JFrame {
             for (int col = 0; col < columnas; col++) {
                 guess.append(guessFields[currentRow][col].getText());
             }
-//            checkGuess(guess.toString());
+            // checkGuess(guess.toString());
             currentRow++;
             currentCol = 0;
+
+            if (currentRow == filas) {
+                showEndWindow();
+            }
+        }
+    }
+
+    private void showEndWindow() {
+        EndGameWindow endGameWindow = new EndGameWindow(this);
+        endGameWindow.setVisible(true);
+    }
+
+    public void resetGame() {
+        currentRow = 0;
+        currentCol = 0;
+        for (int row = 0; row < filas; row++) {
+            for (int col = 0; col < columnas; col++) {
+                guessFields[row][col].setText("");
+            }
         }
     }
 
