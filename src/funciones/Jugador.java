@@ -1,3 +1,4 @@
+// src/funciones/Jugador.java
 package funciones;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class Jugador {
     private float winRate;
 
     // Constructor
-    public Jugador (int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {
+    public Jugador(int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {
         this.ganadas = gan;
         this.racha = rach;
         this.rachaMaxima = rachMax;
@@ -42,11 +43,11 @@ public class Jugador {
         return totalJugadas;
     }
 
-    // Setters
     public float getWinRate() {
         return winRate;
     }
 
+    // Setters
     public void setGanadas(int ganadas) {
         this.ganadas = ganadas;
     }
@@ -73,13 +74,37 @@ public class Jugador {
 
     // Métodos
     public String enviarPalabra(List<Character> letraList) {
-        
-        String palabra = "";
-
+        StringBuilder palabra = new StringBuilder();
         for (Character letra : letraList) {
-            palabra += letra;
+            palabra.append(letra);
         }
+        return palabra.toString();
+    }
 
-        return palabra;
+    // Método para registrar una victoria
+    public void registrarVictoria() {
+        ganadas++;
+        racha++;
+        rachaPerdedora = 0;
+        if (racha > rachaMaxima) {
+            rachaMaxima = racha;
+        }
+        totalJugadas++;
+        actualizarWinRate();
+    }
+
+    // Método para registrar una derrota
+    public void registrarDerrota() {
+        racha = 0;
+        rachaPerdedora++;
+        totalJugadas++;
+        actualizarWinRate();
+    }
+
+    // Método para actualizar el win rate
+    private void actualizarWinRate() {
+        if (totalJugadas > 0) {
+            winRate = (float) ganadas / totalJugadas * 100;
+        }
     }
 }

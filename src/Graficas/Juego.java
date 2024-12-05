@@ -1,10 +1,9 @@
-// src/Graficas/Juego.java
 package Graficas;
 
 import db.GestionDB;
 import extras.EstadoLetra;
 import funciones.ValidarObjeto;
-
+import funciones.Jugador;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -17,7 +16,7 @@ import java.util.List;
 public class Juego extends JFrame {
     private static final int filas = 6;
     private static final int columnas = 5;
-
+    private Jugador jugador;
     private JTextField[][] guessFields;
     private JButton[] keyboardButtons;
     private String wordToGuess;
@@ -26,6 +25,7 @@ public class Juego extends JFrame {
 
     public Juego(String wordToGuess) {
         this.wordToGuess = wordToGuess;
+        this.jugador = new Jugador(0, 0, 0, 0, 0, 0.0f);
         System.out.println("Palabra a adivinar: " + this.wordToGuess); // Print the word to guess
         initializeUI();
     }
@@ -163,7 +163,11 @@ public class Juego extends JFrame {
         }
 
         if (isCorrect) {
+            jugador.registrarVictoria();
             showCongratulationsWindow();
+        } else if (currentRow == filas - 1) {
+            jugador.registrarDerrota();
+            showEndWindow();
         }
     }
 
@@ -179,7 +183,12 @@ public class Juego extends JFrame {
         }
         summary.append("</html>");
 
-        // Show the congratulations window
+        summary.append("<br>Racha actual: ").append(jugador.getRacha());
+        summary.append("<br>Racha máxima: ").append(jugador.getRachaMaxima());
+        summary.append("<br>Racha perdedora: ").append(jugador.getRachaPerdedora());
+        summary.append("<br>Total jugadas: ").append(jugador.getTotalJugadas());
+        summary.append("<br>Win rate: ").append(jugador.getWinRate()).append("%");
+
         new CongratulationsWindow(this, summary.toString()).setVisible(true);
     }
 
