@@ -1,4 +1,4 @@
-
+// src/Graficas/CongratulationsWindow.java
 package Graficas;
 
 import db.GestionDB;
@@ -34,7 +34,8 @@ public class CongratulationsWindow extends JDialog {
         styleButton(playAgainButton);
         playAgainButton.addActionListener(e -> {
             parent.dispose();
-            new Juego(GestionDB.consultarPalabra().toUpperCase());
+            String newWord = GestionDB.consultarPalabra().toUpperCase();
+            new Juego(newWord);
             dispose();
         });
 

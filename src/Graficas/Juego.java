@@ -1,3 +1,4 @@
+// src/Graficas/Juego.java
 package Graficas;
 
 import db.GestionDB;
@@ -205,7 +206,7 @@ public class Juego extends JFrame {
                 guessFields[row][col].setBackground(Color.BLACK);
             }
         }
-        this.wordToGuess = GestionDB.consultarPalabra();
+        this.wordToGuess = GestionDB.consultarPalabra().toUpperCase();
         if (this.wordToGuess == null) {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
