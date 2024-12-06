@@ -28,13 +28,13 @@ public class Jugador {
     }
 
     // Constructor con parametros
-    public Jugador(String nombreUsuario, int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {this.nombreUsuario = nombreUsuario;
+    public Jugador(String nombreUsuario, int gan, int rach, int rachMax, int rachPerd, int total) {
+        this.nombreUsuario = nombreUsuario;
         this.ganadas = gan;
         this.racha = rach;
         this.rachaMaxima = rachMax;
         this.rachaPerdedora = rachPerd;
         this.totalJugadas = total;
-        this.winRate = winrate;
     }
 
     // Getters
@@ -128,7 +128,7 @@ public class Jugador {
     // Método para registrar una derrota
     public void registrarDerrota() {
         racha = 0;
-        rachaPerdedora += 1;
+        rachaPerdedora++;
         totalJugadas++;
     }
 }

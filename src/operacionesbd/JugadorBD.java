@@ -14,8 +14,8 @@ import funciones.Jugador;
 public class JugadorBD {
 
     // Create
-    public static void insertarJugador(String usuario, int totalJugadas, int totalGanadas, float winrate, int rachaMaxima) {
-        String query = "INSERT INTO jugador (usuario) VALUES ('" + usuario + "', " + totalJugadas + ", " + totalGanadas + ", " + winrate + ", " + rachaMaxima + ")";
+    public void insertarJugador(String usuario, int totalJugadas, int totalGanadas, int rachaMaxima) {
+        String query = "INSERT INTO jugador (usuario, totalJugadas, totalGanadas, maximaRacha) VALUES ('" + usuario + "', " + totalJugadas + ", " + totalGanadas + ", " + rachaMaxima + ")";
         
         ConexionBD connect = new ConexionBD();
         Connection conexion = connect.ConectarBD("wordlechafa");
@@ -125,11 +125,28 @@ public class JugadorBD {
         }
     }
 
+    // Actualizar total de perdidas
+    public static void actualizarJugadorTotalPerdidas(String usuario, int totalPerdidas) {
+        String query = "UPDATE jugador SET totalPerdidas = " + totalPerdidas + " WHERE usuario = '" + usuario + "'";
+        
+        ConexionBD connect = new ConexionBD();
+        Connection conexion = connect.ConectarBD("wordlechafa");
+
+        try {
+            Statement stmt = conexion.createStatement();
+            stmt.executeUpdate(query);
+            System.out.println("Total de perdidas actualizado correctamente");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     // el winrate no se actualiza ya que este se calcula en base a las ganadas y perdidas
 
     // Actualizar racha maxima
     public static void actualizarJugadorRachaMaxima(String usuario, int rachaMaxima) {
-        String query = "UPDATE jugador SET rachaMaxima = " + rachaMaxima + " WHERE usuario = '" + usuario + "'";
+        String query = "UPDATE jugador SET maximaRacha = " + rachaMaxima + " WHERE usuario = '" + usuario + "'";
         
         ConexionBD connect = new ConexionBD();
         Connection conexion = connect.ConectarBD("wordlechafa");

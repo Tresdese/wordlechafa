@@ -8,7 +8,6 @@ import java.util.Random;
 
 public class Comodin {
     private boolean activo;
-    private Random random;
 
     // Constructor
     public Comodin() {}
@@ -32,9 +31,14 @@ public class Comodin {
         }
     }
 
-    public char mostrarLetra (String palabraPista) {
-        int index = random.nextInt(palabraPista.length());
+    public String mostrarLetra (String palabraPista) {
+        Random random = new Random();
 
-        return palabraPista.charAt(index);
+        int index = random.nextInt(palabraPista.length());
+        int indexmasuno = index + 1;
+
+        String pista = String.valueOf(palabraPista.charAt(index)) + ", " + indexmasuno;
+
+        return pista;
     }
 }

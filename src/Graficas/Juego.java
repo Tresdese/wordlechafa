@@ -1,11 +1,17 @@
 // src/Graficas/Juego.java
 package Graficas;
 
+// Se importan las clases locales
 import extras.EstadoLetra;
 import funciones.Comodin;
 import funciones.ValidarObjeto;
 import operacionesbd.PalabrasBD;
 import funciones.Jugador;
+import funciones.Comodin;
+import extras.Palabra;
+import operacionesbd.JugadorBD;
+
+// Se importan las clases de java
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -15,24 +21,32 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
-
-import extras.Palabra;
 import java.util.ArrayList;
 
 public class Juego extends JFrame {
     private static final int filas = 6;
     private static final int columnas = 5;
     private Jugador jugador;
+    private JugadorBD jbd;
     private JTextField[][] guessFields;
     private JButton[] keyboardButtons;
-    private JButton iniciarSesionButton;
     private JButton comodinButton;
-    private JLabel rachaPerdidaLabel;
     private String wordToGuess;
     private int currentRow = 0;
     private int currentCol = 0;
 
     public Juego(String wordToGuess) {
+
+        // Inicialización de la base de datos
+        try {
+            this.jbd = new JugadorBD();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error connecting to database: " + e.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+
         // Configuración básica de la ventana
         setTitle("Wordle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,100 +58,212 @@ public class Juego extends JFrame {
 
         // Inicialización de datos
         this.wordToGuess = wordToGuess;
-        this.jugador = new Jugador("", 0, 0, 0, 0, 0, 0.0f);
+        this.jugador = new Jugador("", 0, 0, 0, 0, 0);
         System.out.println("Palabra a adivinar: " + this.wordToGuess);
 
         // Crear y añadir componentes
         initializeUI();
         crearPanelSuperior();
-        crearBotonComodin();
 
         // Hacer visible la ventana
         setVisible(true);
     }
 
+    // Método para crear el panel superior de la ventana
     private void crearPanelSuperior() {
         // Crear panel superior
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        topPanel.setBackground(Color.DARK_GRAY);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Configurar botón de login
-        iniciarSesionButton = new JButton("Iniciar Sesión");
-        iniciarSesionButton.setMaximumSize(new Dimension(120, 30));
-        iniciarSesionButton.setPreferredSize(new Dimension(120, 30));
-        iniciarSesionButton.setBackground(Color.WHITE);
-        iniciarSesionButton.setForeground(Color.BLACK);
-        iniciarSesionButton.addActionListener(e -> new IniciarSesionWindow().setVisible(true));
-    
-        // Crear etiqueta para racha perdida
-        rachaPerdidaLabel = new JLabel("Racha perdida: " + jugador.getRachaPerdedora());
-        rachaPerdidaLabel.setForeground(Color.WHITE);
-        rachaPerdidaLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        rachaPerdidaLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
-    
-        actualizarRachaPerdida();
-    
-        // Añadir componentes al panel
-        topPanel.add(iniciarSesionButton);
-        topPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        topPanel.add(rachaPerdidaLabel);
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.setBackground(Color.DARK_GRAY);
         
-        // Añadir panel al contenedor principal
-        add(topPanel, BorderLayout.NORTH);
-        validate();
+        // Crear panel izquierdo
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        leftPanel.setBackground(Color.DARK_GRAY);
+        
+        // Crear paneles y botones
+        JPanel statsPanel = createStatsPanel(); // Panel de estadísticas
+        JButton loginButton = createLoginButton(); // Botón de inicio de sesión
+        JButton comodinBtn = createComodinButton(); // Botón de comodín
+
+        // Añadir componentes al panel izquierdo
+        leftPanel.add(statsPanel);
+        leftPanel.add(comodinBtn);
+        
+        // Añadir componentes al panel superior
+        panelSuperior.add(leftPanel, BorderLayout.WEST);
+        panelSuperior.add(loginButton, BorderLayout.EAST);
+        
+        // Añadir panel superior a la ventana
+        add(panelSuperior, BorderLayout.NORTH);
     }
 
-    private void crearBotonComodin() {
-        // Configurar botón comodín
-        comodinButton = new JButton("Usar Comodín");
-        comodinButton.setMaximumSize(new Dimension(120, 30));
-        comodinButton.setPreferredSize(new Dimension(120, 30));
-        comodinButton.setBackground(Color.WHITE);
-        comodinButton.setForeground(Color.BLACK);
+    // Método para crear el botón de inicio de sesión
+    private JButton createLoginButton() {
+        JButton loginButton = new JButton("Iniciar Sesión");
+        loginButton.setForeground(Color.WHITE);
+        loginButton.setBackground(new Color(50, 50, 50));
+        loginButton.setFocusPainted(false);
+        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         
-        // Hacer visible el botón cuando la racha perdedora sea 3 o más
-        comodinButton.setVisible(jugador.getRachaPerdedora() >= 1);
-        
-        comodinButton.addActionListener(e -> {
-            if (jugador.getRachaPerdedora() >= 1) {
-                Random random = new Random();
-                int posicionAleatoria = random.nextInt(wordToGuess.length());
-                char letraAyuda = wordToGuess.charAt(posicionAleatoria);
+        loginButton.addActionListener(e -> {
+            try {
+                if (jbd == null) {
+                    throw new Exception("Database connection not initialized");
+                }
                 
+                String username = JOptionPane.showInputDialog(this, 
+                    "Ingrese su nombre de usuario:",
+                    "Iniciar Sesión",
+                    JOptionPane.PLAIN_MESSAGE);
+                    
+                if (username != null && !username.trim().isEmpty()) {
+                    boolean usuarioExistente = false;
+                    
+                    // Buscar si el usuario existe
+                    for (Jugador j : jbd.consultarJugador()) {
+                        if (j.getNombreUsuario().equals(username)) {
+                            jugador = j;
+                            usuarioExistente = true;
+                            break;
+                        }
+                    }
+                    
+                    // Si no existe, crear nuevo
+                    if (!usuarioExistente) {
+                        jbd.insertarJugador(username, 0, 0, 0);
+                        jugador = new Jugador(username, 0, 0, 0, 0, 0);
+                    }
+                    
+                    jugador.setNombreUsuario(username);
+                    loginButton.setText("Usuario: " + username);
+                    loginButton.setEnabled(false);
+                    
+                    JOptionPane.showMessageDialog(this,
+                        "Sesión iniciada correctamente",
+                        "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                    "Una letra de la palabra es: " + letraAyuda + 
-                    "\nEstá en la posición: " + (posicionAleatoria + 1),
-                    "Comodín Usado",
-                    JOptionPane.INFORMATION_MESSAGE);
-                
-                comodinButton.setVisible(false);
-                jugador.setRachaPerdedora(0);
-                actualizarRachaPerdida();
+                    "Error al procesar el login: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
         });
-    
-        // Obtener el panel superior y añadir el botón
-        JPanel topPanel = (JPanel) getContentPane().getComponent(0);
-        topPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        topPanel.add(comodinButton);
         
-        // Refrescar la UI
-        topPanel.revalidate();
-        topPanel.repaint();
+        return loginButton;
     }
 
-    private void actualizarRachaPerdida() {
-        if (jugador.getRachaPerdedora() >= 1) {
-            rachaPerdidaLabel.setText("¡Comodín disponible! Racha: " + jugador.getRachaPerdedora());
-            rachaPerdidaLabel.setForeground(Color.YELLOW);
-        } else {
-            rachaPerdidaLabel.setText("Racha perdida: " + jugador.getRachaPerdedora());
-            rachaPerdidaLabel.setForeground(Color.WHITE);
+    // Método para crear el botón de comodín
+    private JButton createComodinButton() {
+        comodinButton = new JButton("Usar Comodín");
+        comodinButton.setForeground(Color.WHITE);
+        comodinButton.setBackground(new Color(255, 193, 7)); // Color amarillo
+        comodinButton.setFocusPainted(false);
+        comodinButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        comodinButton.setVisible(false); // Inicialmente invisible
+        
+        comodinButton.addActionListener(e -> {
+            Comodin comodin = new Comodin();
+            String pista = String.valueOf(comodin.mostrarLetra(wordToGuess));
+            JOptionPane.showMessageDialog(this, "Pista: " + pista, "Comodín", JOptionPane.INFORMATION_MESSAGE);
+            comodinButton.setVisible(false);
+            comodinButton.setEnabled(false);
+        });
+        
+        return comodinButton;
+    }
+
+    // Método para verificar si se puede mostrar el botón de comodín
+    public void checkComodinButton() {
+        if (jugador.getRachaPerdedora() >= 3 && comodinButton != null) {
+            comodinButton.setVisible(true);
+            comodinButton.setEnabled(true);
         }
     }
 
+    // Método para crear el panel de estadísticas
+    private JPanel createStatsPanel() {
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        statsPanel.setBackground(Color.DARK_GRAY);
+    
+        JLabel lossLabel = new JLabel("Perdidas: " + jugador.getRachaPerdedora());
+        JLabel streakLabel = new JLabel("Racha: " + jugador.getRacha());
+    
+        // Estilo para las labels
+        lossLabel.setForeground(new Color(244, 67, 54)); // Rojo
+        streakLabel.setForeground(Color.WHITE);
+    
+        // Añadir padding
+        lossLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        streakLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+        statsPanel.add(lossLabel);
+        statsPanel.add(streakLabel);
+    
+        return statsPanel;
+    }
+
+    // Método para actualizar las estadísticas del jugador
+    public void actualizarEstadisticas() {
+        SwingUtilities.invokeLater(() -> {
+            Container c = getContentPane();
+            Component[] components = c.getComponents();
+            for (Component comp : components) {
+                if (comp instanceof JPanel) {
+                    JPanel panel = (JPanel) comp;
+                    updatePanelLabels(panel);
+                }
+            }
+        });
+    }
+
+    private void actualizarDatosJugador() {
+
+        int id = jugador.getId();
+        String nombreUsuario = jugador.getNombreUsuario();
+        int jugadas = jugador.getTotalJugadas();
+        int ganadas = jugador.getGanadas();
+        int perdidas = jugador.getRachaPerdedora();
+        int racha = jugador.getRacha();
+
+        try {
+            if (jbd != null && jugador != null) {
+                
+                jbd.actualizarJugadorTotalJugadas(nombreUsuario, jugadas);
+                jbd.actualizarJugadorTotalGanadas(nombreUsuario, ganadas);
+                jbd.actualizarJugadorTotalPerdidas(nombreUsuario, perdidas);
+                jbd.actualizarJugadorRachaMaxima(nombreUsuario, racha);
+
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error al actualizar datos: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método para actualizar las etiquetas del panel
+    private void updatePanelLabels(JPanel panel) {
+        for (Component innerComp : panel.getComponents()) {
+            if (innerComp instanceof JPanel) {
+                // Recursive check for nested panels
+                updatePanelLabels((JPanel) innerComp);
+            }
+            if (innerComp instanceof JLabel) {
+                JLabel label = (JLabel) innerComp;
+                String labelText = label.getText();
+                
+                if (labelText.startsWith("Perdidas")) {
+                    label.setText("Perdidas: " + jugador.getRachaPerdedora());
+                } else if (labelText.startsWith("Racha")) {
+                    label.setText("Racha: " + jugador.getRacha());
+                }
+            }
+        }
+    }
+
+    // Método para inicializar la interfaz de usuario
     private void initializeUI() {
         setTitle("Wordle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -257,28 +383,54 @@ public class Juego extends JFrame {
     }
 
     private void checkGuess(String guess) {
-        List<EstadoLetra> estados = ValidarObjeto.validarLetra(wordToGuess, guess);
-        boolean isCorrect = true;
-
-        for (int col = 0; col < guess.length(); col++) {
-            EstadoLetra estado = estados.get(col);
-            if (estado == EstadoLetra.correcta) {
-                guessFields[currentRow][col].setBackground(Color.GREEN);
-            } else if (estado == EstadoLetra.posIncorrecta) {
-                guessFields[currentRow][col].setBackground(Color.ORANGE);
-                isCorrect = false;
-            } else {
-                guessFields[currentRow][col].setBackground(Color.GRAY);
-                isCorrect = false;
-            }
+        if (guess == null || guess.length() != wordToGuess.length()) {
+            throw new IllegalArgumentException("Invalid guess length");
         }
-
-        if (isCorrect) {
-            jugador.registrarVictoria();
-            showCongratulationsWindow();
-        } else if (currentRow == filas - 1) {
-            jugador.registrarDerrota();
-            showEndWindow();
+    
+        try {
+            List<EstadoLetra> estados = ValidarObjeto.validarLetra(wordToGuess, guess);
+            if (estados == null || estados.size() != guess.length()) {
+                throw new IllegalStateException("Invalid validation result");
+            }
+    
+            boolean isCorrect = true;
+    
+            for (int col = 0; col < guess.length(); col++) {
+                EstadoLetra estado = estados.get(col);
+                switch (estado) {
+                    case correcta:
+                        guessFields[currentRow][col].setBackground(Color.GREEN);
+                        break;
+                    case posIncorrecta:
+                        guessFields[currentRow][col].setBackground(Color.ORANGE);
+                        isCorrect = false;
+                        break;
+                    default:
+                        guessFields[currentRow][col].setBackground(Color.GRAY);
+                        isCorrect = false;
+                        break;
+                }
+                guessFields[currentRow][col].setForeground(Color.WHITE);
+            }
+    
+            if (isCorrect) {
+                jugador.registrarVictoria();
+                actualizarDatosJugador();
+                actualizarEstadisticas();
+                showCongratulationsWindow();
+                checkComodinButton();
+            } else if (currentRow == filas - 1) {
+                jugador.registrarDerrota();
+                actualizarDatosJugador();
+                actualizarEstadisticas();
+                showEndWindow();
+                checkComodinButton();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error validating guess: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -303,7 +455,7 @@ public class Juego extends JFrame {
     }
 
     private void showEndWindow() {
-        actualizarRachaPerdida();
+        // actualizarRachaPerdida();
 
         new EndGameWindow(this).setVisible(true);
     }
