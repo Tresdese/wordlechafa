@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.Random;
+
 import extras.Palabra;
 import java.util.ArrayList;
 
@@ -24,6 +26,8 @@ public class Juego extends JFrame {
     private JTextField[][] guessFields;
     private JButton[] keyboardButtons;
     private JButton iniciarSesionButton;
+    private JButton comodinButton;
+    private JLabel rachaPerdidaLabel;
     private String wordToGuess;
     private int currentRow = 0;
     private int currentCol = 0;
@@ -45,25 +49,93 @@ public class Juego extends JFrame {
 
         // Crear y añadir componentes
         initializeUI();
-        botonLogin();
+        crearPanelSuperior();
+        crearBotonComodin();
 
         // Hacer visible la ventana
         setVisible(true);
     }
 
-    private void botonLogin() {
+    private void crearPanelSuperior() {
+        // Crear panel superior
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.setBackground(Color.DARK_GRAY);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Configurar botón de login
         iniciarSesionButton = new JButton("Iniciar Sesión");
+        iniciarSesionButton.setMaximumSize(new Dimension(120, 30));
         iniciarSesionButton.setPreferredSize(new Dimension(120, 30));
         iniciarSesionButton.setBackground(Color.WHITE);
         iniciarSesionButton.setForeground(Color.BLACK);
         iniciarSesionButton.addActionListener(e -> new IniciarSesionWindow().setVisible(true));
-
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        topPanel.setBackground(Color.DARK_GRAY);
+    
+        // Crear etiqueta para racha perdida
+        rachaPerdidaLabel = new JLabel("Racha perdida: " + jugador.getRachaPerdedora());
+        rachaPerdidaLabel.setForeground(Color.WHITE);
+        rachaPerdidaLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        rachaPerdidaLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+    
+        actualizarRachaPerdida();
+    
+        // Añadir componentes al panel
         topPanel.add(iniciarSesionButton);
+        topPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        topPanel.add(rachaPerdidaLabel);
         
-        getContentPane().add(topPanel, BorderLayout.NORTH);
+        // Añadir panel al contenedor principal
+        add(topPanel, BorderLayout.NORTH);
         validate();
+    }
+
+    private void crearBotonComodin() {
+        // Configurar botón comodín
+        comodinButton = new JButton("Usar Comodín");
+        comodinButton.setMaximumSize(new Dimension(120, 30));
+        comodinButton.setPreferredSize(new Dimension(120, 30));
+        comodinButton.setBackground(Color.WHITE);
+        comodinButton.setForeground(Color.BLACK);
+        
+        // Hacer visible el botón cuando la racha perdedora sea 3 o más
+        comodinButton.setVisible(jugador.getRachaPerdedora() >= 1);
+        
+        comodinButton.addActionListener(e -> {
+            if (jugador.getRachaPerdedora() >= 1) {
+                Random random = new Random();
+                int posicionAleatoria = random.nextInt(wordToGuess.length());
+                char letraAyuda = wordToGuess.charAt(posicionAleatoria);
+                
+                JOptionPane.showMessageDialog(this,
+                    "Una letra de la palabra es: " + letraAyuda + 
+                    "\nEstá en la posición: " + (posicionAleatoria + 1),
+                    "Comodín Usado",
+                    JOptionPane.INFORMATION_MESSAGE);
+                
+                comodinButton.setVisible(false);
+                jugador.setRachaPerdedora(0);
+                actualizarRachaPerdida();
+            }
+        });
+    
+        // Obtener el panel superior y añadir el botón
+        JPanel topPanel = (JPanel) getContentPane().getComponent(0);
+        topPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        topPanel.add(comodinButton);
+        
+        // Refrescar la UI
+        topPanel.revalidate();
+        topPanel.repaint();
+    }
+
+    private void actualizarRachaPerdida() {
+        if (jugador.getRachaPerdedora() >= 1) {
+            rachaPerdidaLabel.setText("¡Comodín disponible! Racha: " + jugador.getRachaPerdedora());
+            rachaPerdidaLabel.setForeground(Color.YELLOW);
+        } else {
+            rachaPerdidaLabel.setText("Racha perdida: " + jugador.getRachaPerdedora());
+            rachaPerdidaLabel.setForeground(Color.WHITE);
+        }
     }
 
     private void initializeUI() {
@@ -76,9 +148,15 @@ public class Juego extends JFrame {
 
         setLocationRelativeTo(null);
 
+        // Panel contenedor principal con tamaño fijo
+        JPanel mainGuessContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        mainGuessContainer.setBackground(Color.DARK_GRAY);
+
+        // Panel de cuadrícula con tamaño fijo
         JPanel guessPanel = new JPanel(new GridLayout(filas, columnas, 5, 5));
         guessPanel.setBackground(Color.DARK_GRAY);
         guessPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        guessPanel.setPreferredSize(new Dimension(300, 360)); // Tamaño fijo para el panel de cuadrícula
 
         guessFields = new JTextField[filas][columnas];
 
@@ -91,9 +169,18 @@ public class Juego extends JFrame {
                 guessFields[row][col].setBackground(Color.BLACK);
                 guessFields[row][col].setForeground(Color.WHITE);
                 guessFields[row][col].setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+                
+                // Establecer tamaño fijo para cada campo
+                guessFields[row][col].setPreferredSize(new Dimension(50, 50));
+                guessFields[row][col].setMinimumSize(new Dimension(50, 50));
+                guessFields[row][col].setMaximumSize(new Dimension(50, 50));
+                
                 guessPanel.add(guessFields[row][col]);
             }
         }
+
+        mainGuessContainer.add(guessPanel);
+        add(mainGuessContainer, BorderLayout.CENTER);
 
         JPanel keyboardPanel = new JPanel(new GridLayout(3, 10, 5, 5));
         keyboardPanel.setBackground(Color.DARK_GRAY);
@@ -216,6 +303,8 @@ public class Juego extends JFrame {
     }
 
     private void showEndWindow() {
+        actualizarRachaPerdida();
+
         new EndGameWindow(this).setVisible(true);
     }
 

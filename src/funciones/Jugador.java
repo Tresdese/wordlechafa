@@ -115,7 +115,7 @@ public class Jugador {
     }
 
     // Método para registrar una victoria
-    public int registrarVictoria() {
+    public void registrarVictoria() {
         ganadas++;
         racha++;
         rachaPerdedora = 0;
@@ -123,17 +123,12 @@ public class Jugador {
             rachaMaxima = racha;
         }
         totalJugadas++;
-//        actualizarWinRate();
-
-        return racha;
     }
 
     // Método para registrar una derrota
-    public int registrarDerrota() {
+    public void registrarDerrota() {
         racha = 0;
-        rachaPerdedora++;
+        rachaPerdedora += 1;
         totalJugadas++;
-//        actualizarWinRate();
-        return rachaPerdedora;
     }
 }
