@@ -2,7 +2,9 @@ package funciones;
 
 import java.util.Random;
 
+import extras.Palabra;
 import funciones.Jugador;
+import java.util.Random;
 
 public class Comodin {
     private boolean activo;

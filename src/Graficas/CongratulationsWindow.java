@@ -2,13 +2,20 @@
 package Graficas;
 
 import javax.swing.*;
-
-import operacionesbd.PalabrasBD;
 import extras.Palabra;
-
+import funciones.ValidarObjeto;
+import operacionesbd.PalabrasBD;
+import funciones.Diccionario;
 import java.awt.*;
+import java.util.Random;
+import java.util.List;
 
 public class CongratulationsWindow extends JDialog {
+    Random random;
+    List <Palabra> listaPalabras = PalabrasBD.consultarPalabra();
+    List <Palabra> palabrasDeCincoLetras = ValidarObjeto.validarPalabra(listaPalabras);
+    Diccionario diccionario = new Diccionario();
+//    String newWord = diccionario.obtenerPalabraAleatoria(palabrasDeCincoLetras);
     public CongratulationsWindow(JFrame parent, String summary) {
         super(parent, "Congratulations", true);
         setLayout(new BorderLayout());
@@ -36,7 +43,7 @@ public class CongratulationsWindow extends JDialog {
         styleButton(playAgainButton);
         playAgainButton.addActionListener(e -> {
             parent.dispose();
-            String newWord = PalabrasBD.consultarPalabra().toUpperCase();
+            String newWord = diccionario.obtenerPalabraAleatoria(palabrasDeCincoLetras);
             new Juego(newWord);
             dispose();
         });

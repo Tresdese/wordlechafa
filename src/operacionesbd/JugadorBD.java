@@ -13,8 +13,8 @@ import db.ConexionBD;
 public class JugadorBD {
 
     // Create
-    public static void insertarJugador(String usuario, int totalJugadas, int totalGanadas, int rachaMaxima) {
-        String query = "INSERT INTO jugador (usuario, totalJugadas, totalGanadas, maximaRacha) VALUES ('" + usuario + "', " + totalJugadas + ", " + totalGanadas + ", " + rachaMaxima + ")";
+    public static void insertarJugador(String usuario, int totalJugadas, int totalGanadas, float winrate, int rachaMaxima) {
+        String query = "INSERT INTO jugador (usuario) VALUES ('" + usuario + "', " + totalJugadas + ", " + totalGanadas + ", " + winrate + ", " + rachaMaxima + ")";
         
         ConexionBD connect = new ConexionBD();
         Connection conexion = connect.ConectarBD("wordlechafa");

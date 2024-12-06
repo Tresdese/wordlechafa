@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import extras.Palabra;
+import java.util.ArrayList;
 
 public class Juego extends JFrame {
     private static final int filas = 6;
@@ -201,10 +203,12 @@ public class Juego extends JFrame {
         currentRow = 0;
         currentCol = 0;
 
-        List<String> palabrasMayusculas;
+        List<Palabra> palabras = PalabrasBD.consultarPalabra();
+        List<Palabra> palabrasDeCincoLetras = ValidarObjeto.validarPalabra(palabras);
+        List<String> palabrasMayusculas = new ArrayList<>();
 
-        for (String palabra : PalabrasBD.consultarPalabra()) {
-            palabrasMayusculas.add(palabra.toUpperCase());
+        for (Palabra palabra : palabrasDeCincoLetras) {
+            palabrasMayusculas.add(palabra.getPalabra().toUpperCase());
         }
 
         for (int row = 0; row < filas; row++) {
@@ -213,8 +217,10 @@ public class Juego extends JFrame {
                 guessFields[row][col].setBackground(Color.BLACK);
             }
         }
-        this.wordToGuess = palabrasMayusculas;
-        if (this.wordToGuess == null) {
+
+        if (!palabrasMayusculas.isEmpty()) {
+            this.wordToGuess = palabrasMayusculas.get(0); // Assuming you want to use the first word
+        } else {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
     }

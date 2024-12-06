@@ -1,27 +1,27 @@
+// src/principal/Main.java
 package principal;
 
 import Graficas.Juego;
+import extras.Palabra;
 import operacionesbd.PalabrasBD;
-
+import funciones.ValidarObjeto;
 import javax.swing.SwingUtilities;
 import java.util.List;
+import funciones.Diccionario;
 
 public class Main {
     public static void main(String[] args) {
         // Obtener la palabra a adivinar de la base de datos y convertirla a mayúsculas
-        final List<String> palabraAdivinar = PalabrasBD.consultarPalabra();
-        final List<String> palabrasMayusculas;
+        List<Palabra> palabras = PalabrasBD.consultarPalabra();
+        List<Palabra> palabrasDeCincoLetras = ValidarObjeto.validarPalabra(palabras);
+        List<Palabra> palabrasMayusculas = ValidarObjeto.listaMayusculas(palabrasDeCincoLetras);
+        Diccionario diccioanrio = new Diccionario();
 
-        for (String palabra : palabraAdivinar) {
-            palabrasMayusculas.add(palabra.toUpperCase());
+        if (!palabrasMayusculas.isEmpty()) {
+            String palabraAdivinar = palabrasMayusculas.get(0).getPalabra();
+            SwingUtilities.invokeLater(() -> new Juego(diccioanrio.obtenerPalabraAleatoria(palabrasMayusculas)));
+        } else {
+            throw new RuntimeException("No se pudo obtener una palabra de cinco letras de la hjbase de datos.");
         }
-
-        if (palabraAdivinar == null) {
-            throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
-        }
-        // final String palabraAdivinarMayusculas = palabraAdivinar.toUpperCase(); // Convertir a mayúsculas
-
-        // Iniciar el juego con la palabra obtenida
-        SwingUtilities.invokeLater(() -> new Juego(palabrasMayusculas));
     }
 }
