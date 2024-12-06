@@ -26,7 +26,7 @@ public class Juego extends JFrame {
 
     public Juego(String wordToGuess) {
         this.wordToGuess = wordToGuess;
-        this.jugador = new Jugador(0, 0, 0, 0, 0, 0.0f);
+        this.jugador = new Jugador("", 0, 0, 0, 0, 0, 0.0f);
         System.out.println("Palabra a adivinar: " + this.wordToGuess); // Print the word to guess
         initializeUI();
     }

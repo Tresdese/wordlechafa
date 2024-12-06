@@ -4,6 +4,7 @@ package Graficas;
 import javax.swing.*;
 
 import operacionesbd.PalabrasBD;
+import extras.Palabra;
 
 import java.awt.*;
 
