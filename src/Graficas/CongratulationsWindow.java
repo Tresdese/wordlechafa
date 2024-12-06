@@ -15,6 +15,7 @@ public class CongratulationsWindow extends JDialog {
     List <Palabra> listaPalabras = PalabrasBD.consultarPalabra();
     List <Palabra> palabrasDeCincoLetras = ValidarObjeto.validarPalabra(listaPalabras);
     Diccionario diccionario = new Diccionario();
+    List <Palabra> palabrasMayusculas = ValidarObjeto.listaMayusculas(palabrasDeCincoLetras);
 //    String newWord = diccionario.obtenerPalabraAleatoria(palabrasDeCincoLetras);
     public CongratulationsWindow(JFrame parent, String summary) {
         super(parent, "Congratulations", true);
@@ -43,7 +44,7 @@ public class CongratulationsWindow extends JDialog {
         styleButton(playAgainButton);
         playAgainButton.addActionListener(e -> {
             parent.dispose();
-            String newWord = diccionario.obtenerPalabraAleatoria(palabrasDeCincoLetras);
+            String newWord = diccionario.obtenerPalabraAleatoria(palabrasMayusculas);
             new Juego(newWord);
             dispose();
         });
