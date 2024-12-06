@@ -1,7 +1,7 @@
 package principal;
 
 import Graficas.Juego;
-import db.PalabrasBD;
+import operacionesbd.PalabrasBD;
 
 import javax.swing.SwingUtilities;
 import java.util.List;

@@ -1,9 +1,10 @@
 // src/Graficas/CongratulationsWindow.java
 package Graficas;
 
-import db.PalabrasBD;
-
 import javax.swing.*;
+
+import operacionesbd.PalabrasBD;
+
 import java.awt.*;
 
 public class CongratulationsWindow extends JDialog {

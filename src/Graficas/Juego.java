@@ -1,9 +1,9 @@
 // src/Graficas/Juego.java
 package Graficas;
 
-import db.PalabrasBD;
 import extras.EstadoLetra;
 import funciones.ValidarObjeto;
+import operacionesbd.PalabrasBD;
 import funciones.Jugador;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
