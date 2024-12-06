@@ -10,12 +10,9 @@ import java.util.Random;
 public class Diccionario {
 
     private List<Palabra> palabrasValidadas;
-//    private Random random;
 
     // Constructor
-    public Diccionario() {
-//        this.palabrasValidadas = palabrasValidadas;
-    }
+    public Diccionario() {}
 
     // Metodo para obtener una palabra aleatoria preferiblemente de una lista con palabras de 5 letras
     public String obtenerPalabraAleatoria(List <Palabra> palabrasValidadas) {

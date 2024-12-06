@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Jugador {
     // Atributos
+    private int id;
     private String nombreUsuario;
     private int ganadas;
     private int racha;
@@ -27,8 +28,7 @@ public class Jugador {
     }
 
     // Constructor con parametros
-    public Jugador(String nombreUsuario, int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {
-        this.nombreUsuario = nombreUsuario;
+    public Jugador(String nombreUsuario, int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {this.nombreUsuario = nombreUsuario;
         this.ganadas = gan;
         this.racha = rach;
         this.rachaMaxima = rachMax;
@@ -38,6 +38,10 @@ public class Jugador {
     }
 
     // Getters
+    public int getId() {
+        return id;
+    }
+
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -67,6 +71,10 @@ public class Jugador {
     }
 
     // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
@@ -128,15 +136,4 @@ public class Jugador {
 //        actualizarWinRate();
         return rachaPerdedora;
     }
-
-//    // Método para actualizar el win rate
-//    private float actualizarWinRate() {
-//        float winrate = 0.0f;
-//
-//        if (totalJugadas > 0) {
-//            winrate = winRate = (float) ganadas / totalJugadas * 100;
-//        }
-//
-//        return winrate;
-//    } esta en veremos
 }

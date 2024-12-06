@@ -29,23 +29,41 @@ public class Juego extends JFrame {
     private int currentCol = 0;
 
     public Juego(String wordToGuess) {
+        // Configuración básica de la ventana
+        setTitle("Wordle");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 800);
+        setResizable(false);
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.DARK_GRAY);
+        setLocationRelativeTo(null);
+
+        // Inicialización de datos
         this.wordToGuess = wordToGuess;
         this.jugador = new Jugador("", 0, 0, 0, 0, 0, 0.0f);
         System.out.println("Palabra a adivinar: " + this.wordToGuess);
 
-        iniciarSesionButton = new JButton("Iniciar Sesión");
-        iniciarSesionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new IniciarSesionWindow().setVisible(true);
-            }
-        });
-
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Ensure the layout is set
-        topPanel.add(iniciarSesionButton);
-        add(topPanel, BorderLayout.NORTH);
+        // Crear y añadir componentes
         initializeUI();
+        botonLogin();
+
+        // Hacer visible la ventana
+        setVisible(true);
+    }
+
+    private void botonLogin() {
+        iniciarSesionButton = new JButton("Iniciar Sesión");
+        iniciarSesionButton.setPreferredSize(new Dimension(120, 30));
+        iniciarSesionButton.setBackground(Color.WHITE);
+        iniciarSesionButton.setForeground(Color.BLACK);
+        iniciarSesionButton.addActionListener(e -> new IniciarSesionWindow().setVisible(true));
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setBackground(Color.DARK_GRAY);
+        topPanel.add(iniciarSesionButton);
+        
+        getContentPane().add(topPanel, BorderLayout.NORTH);
+        validate();
     }
 
     private void initializeUI() {

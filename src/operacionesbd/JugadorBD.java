@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.ConexionBD;
+import funciones.Jugador;
 
 
 public class JugadorBD {
@@ -30,13 +31,13 @@ public class JugadorBD {
     }
 
     // Read
-    public static List<String> consultarJugador() {
+    public static List<Jugador> consultarJugador() {
         String query = "SELECT * FROM jugador";
         
         ConexionBD connect = new ConexionBD();
         Connection conexion = connect.ConectarBD("wordlechafa");
 
-        List<String> usuarios = new ArrayList<String>();
+        List<Jugador> usuario = new ArrayList<Jugador>();
 
         try {
 
@@ -44,11 +45,26 @@ public class JugadorBD {
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                String usuario = rs.getString("usuario");
-                usuarios.add(usuario);
+                int id = rs.getInt("id");
+                String usuarioNom = rs.getString("usuario");
+                int totalJugadas = rs.getInt("totalJugadas");
+                int totalGanadas = rs.getInt("totalGanadas");
+                float winrate = rs.getFloat("winrate");
+                int rachaMaxima = rs.getInt("maximaRacha");
+
+                Jugador j = new Jugador();
+
+                j.setId(id);
+                j.setNombreUsuario(usuarioNom);
+                j.setTotalJugadas(totalJugadas);
+                j.setGanadas(totalGanadas);
+                j.setWinRate(winrate);
+                j.setRachaMaxima(rachaMaxima);
+
+                usuario.add(j);
             }
 
-            return usuarios;
+            return usuario;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
