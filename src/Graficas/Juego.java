@@ -200,13 +200,20 @@ public class Juego extends JFrame {
     public void resetGame() {
         currentRow = 0;
         currentCol = 0;
+
+        List<String> palabrasMayusculas;
+
+        for (String palabra : PalabrasBD.consultarPalabra()) {
+            palabrasMayusculas.add(palabra.toUpperCase());
+        }
+
         for (int row = 0; row < filas; row++) {
             for (int col = 0; col < columnas; col++) {
                 guessFields[row][col].setText("");
                 guessFields[row][col].setBackground(Color.BLACK);
             }
         }
-        this.wordToGuess = GestionDB.consultarPalabra().toUpperCase();
+        this.wordToGuess = palabrasMayusculas;
         if (this.wordToGuess == null) {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
