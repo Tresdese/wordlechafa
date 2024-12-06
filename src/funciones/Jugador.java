@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Jugador {
     // Atributos
+    private String nombreUsuario;
     private int ganadas;
     private int racha;
     private int rachaMaxima;
@@ -12,8 +13,22 @@ public class Jugador {
     private int totalJugadas;
     private float winRate;
 
-    // Constructor
-    public Jugador(int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {
+    // Constructores
+
+    // Constructor sin parametros
+    public Jugador() {
+        this.nombreUsuario = "";
+        this.ganadas = 0;
+        this.racha = 0;
+        this.rachaMaxima = 0;
+        this.rachaPerdedora = 0;
+        this.totalJugadas = 0;
+        this.winRate = 0.0f;
+    }
+
+    // Constructor con parametros
+    public Jugador(String nombreUsuario, int gan, int rach, int rachMax, int rachPerd, int total, float winrate) {
+        this.nombreUsuario = nombreUsuario;
         this.ganadas = gan;
         this.racha = rach;
         this.rachaMaxima = rachMax;
@@ -23,6 +38,10 @@ public class Jugador {
     }
 
     // Getters
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
     public int getGanadas() {
         return ganadas;
     }
@@ -48,6 +67,10 @@ public class Jugador {
     }
 
     // Setters
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
     public void setGanadas(int ganadas) {
         this.ganadas = ganadas;
     }
@@ -84,7 +107,7 @@ public class Jugador {
     }
 
     // Método para registrar una victoria
-    public void registrarVictoria() {
+    public int registrarVictoria() {
         ganadas++;
         racha++;
         rachaPerdedora = 0;
@@ -93,15 +116,17 @@ public class Jugador {
         }
         totalJugadas++;
         actualizarWinRate();
+
+        return racha;
     }
 
     // Método para registrar una derrota
-    public float registrarDerrota() {
+    public int registrarDerrota() {
         racha = 0;
         rachaPerdedora++;
         totalJugadas++;
-        float winrate1 = actualizarWinRate();
-        return winrate1;
+        actualizarWinRate();
+        return rachaPerdedora;
     }
 
     // Método para actualizar el win rate

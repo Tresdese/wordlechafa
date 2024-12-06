@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.ConexionBD;
+import extras.Palabra;
 
 public class PalabrasBD {
 
@@ -29,20 +30,26 @@ public class PalabrasBD {
     }
     
     // Read
-    public static List<String> consultarPalabra() {
+    public static List<Palabra> consultarPalabra() {
         String query = "SELECT * FROM palabras";
         
         ConexionBD connect = new ConexionBD();
         Connection conexion = connect.ConectarBD("wordlechafa");
 
-        List<String> palabras = new ArrayList<String>();
+        List<Palabra> palabras = new ArrayList<Palabra>();
 
         try {
             Statement stmt = conexion.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
+                int id = rs.getInt("id");
                 String palabra = rs.getString("palabra");
-                palabras.add(palabra);
+                int longitud = rs.getInt("longitud");
+                String descripcion = rs.getString("descripcion");
+
+                Palabra p = new Palabra(id, palabra, longitud, descripcion);
+
+                palabras.add(p);
                 //    System.out.println(rs.getString("palabra"));
             }
 

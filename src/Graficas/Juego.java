@@ -147,7 +147,7 @@ public class Juego extends JFrame {
         System.out.println("Word to guess: " + wordToGuess); // Print the word to guess
         System.out.println("Word formed: " + guess); // Print the formed word
 
-        List<EstadoLetra> estados = ValidarObjeto.validar(wordToGuess, guess);
+        List<EstadoLetra> estados = ValidarObjeto.validarLetra(wordToGuess, guess);
         boolean isCorrect = true;
 
         for (int col = 0; col < guess.length(); col++) {

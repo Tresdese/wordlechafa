@@ -2,11 +2,14 @@
 package funciones;
 
 import extras.EstadoLetra;
+import extras.Palabra;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ValidarObjeto {
-    public static List<EstadoLetra> validar(String wordToGuess, String guess) {
+
+    public static List<EstadoLetra> validarLetra(String wordToGuess, String guess) {
         List<EstadoLetra> estados = new ArrayList<>();
         char[] wordToGuessArray = wordToGuess.toCharArray();
         char[] guessArray = guess.toCharArray();
@@ -42,5 +45,17 @@ public class ValidarObjeto {
         }
 
         return estados;
+    }
+
+    public static List<Palabra> validarPalabra(List<Palabra> palabrasDisponibles) {
+        List<Palabra> palabrasDeCincoLetras = new ArrayList<>();
+
+        for (Palabra p : palabrasDisponibles) {
+            if (p.getLongitud() == 5) {
+                palabrasDeCincoLetras.add(p);
+            }
+        }
+
+        return palabrasDeCincoLetras;
     }
 }
