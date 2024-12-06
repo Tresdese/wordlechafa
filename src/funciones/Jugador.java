@@ -97,7 +97,7 @@ public class Jugador {
 
     // Métodos
 
-    // Metodo para enviar la palabra a adivinar
+    // Metodo para enviar la palabra a adivinarx
     public String enviarPalabra(List<Character> letraList) {
         StringBuilder palabra = new StringBuilder();
         for (Character letra : letraList) {
@@ -115,7 +115,7 @@ public class Jugador {
             rachaMaxima = racha;
         }
         totalJugadas++;
-        actualizarWinRate();
+//        actualizarWinRate();
 
         return racha;
     }
@@ -125,18 +125,18 @@ public class Jugador {
         racha = 0;
         rachaPerdedora++;
         totalJugadas++;
-        actualizarWinRate();
+//        actualizarWinRate();
         return rachaPerdedora;
     }
 
-    // Método para actualizar el win rate
-    private float actualizarWinRate() {
-        float winrate = 0.0f;
-
-        if (totalJugadas > 0) {
-            winrate = winRate = (float) ganadas / totalJugadas * 100;
-        }
-        
-        return winrate;
-    }
+//    // Método para actualizar el win rate
+//    private float actualizarWinRate() {
+//        float winrate = 0.0f;
+//
+//        if (totalJugadas > 0) {
+//            winrate = winRate = (float) ganadas / totalJugadas * 100;
+//        }
+//
+//        return winrate;
+//    } esta en veremos
 }

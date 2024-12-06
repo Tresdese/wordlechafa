@@ -47,6 +47,17 @@ public class ValidarObjeto {
         return estados;
     }
 
+    public static List<Palabra> listaMayusculas(List<Palabra> palabras) {
+        List<Palabra> palabrasMayusculas = new ArrayList<>();
+
+        for (Palabra p : palabras) {
+            p.setPalabra(p.getPalabra().toUpperCase());
+            palabrasMayusculas.add(p);
+        }
+
+        return palabrasMayusculas;
+    }
+
     public static List<Palabra> validarPalabra(List<Palabra> palabrasDisponibles) {
         List<Palabra> palabrasDeCincoLetras = new ArrayList<>();
 

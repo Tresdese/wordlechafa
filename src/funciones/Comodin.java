@@ -1,9 +1,12 @@
 package funciones;
 
+import extras.Palabra;
 import funciones.Jugador;
+import java.util.Random;
 
 public class Comodin {
     private boolean activo;
+    private Random random;
 
     // Constructor
     public Comodin() {}
@@ -25,5 +28,10 @@ public class Comodin {
         } else {
             this.activo = false;
         }
+    }
+
+    public char mostrarLetra(String palabraPista){
+        int index = random.nextInt(palabraPista.length());
+        return palabraPista.charAt(index);
     }
 }
