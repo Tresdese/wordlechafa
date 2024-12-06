@@ -2,6 +2,7 @@
 package Graficas;
 
 import extras.EstadoLetra;
+import funciones.Comodin;
 import funciones.ValidarObjeto;
 import operacionesbd.PalabrasBD;
 import funciones.Jugador;
@@ -22,6 +23,7 @@ public class Juego extends JFrame {
     private Jugador jugador;
     private JTextField[][] guessFields;
     private JButton[] keyboardButtons;
+    private JButton iniciarSesionButton;
     private String wordToGuess;
     private int currentRow = 0;
     private int currentCol = 0;
@@ -29,25 +31,36 @@ public class Juego extends JFrame {
     public Juego(String wordToGuess) {
         this.wordToGuess = wordToGuess;
         this.jugador = new Jugador("", 0, 0, 0, 0, 0, 0.0f);
-        System.out.println("Palabra a adivinar: " + this.wordToGuess); // Print the word to guess
+        System.out.println("Palabra a adivinar: " + this.wordToGuess);
+
+        iniciarSesionButton = new JButton("Iniciar Sesión");
+        iniciarSesionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new IniciarSesionWindow().setVisible(true);
+            }
+        });
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Ensure the layout is set
+        topPanel.add(iniciarSesionButton);
+        add(topPanel, BorderLayout.NORTH);
         initializeUI();
     }
 
     private void initializeUI() {
         setTitle("Wordle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 800); // Tamaño ajustado de la ventana
-        setResizable(false); // Deshabilita el redimensionamiento
+        setSize(600, 800); // Adjusted size of the window
+        setResizable(false);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(Color.DARK_GRAY); // Establecer fondo gris oscuro
+        getContentPane().setBackground(Color.DARK_GRAY);
 
-        // Centrar la ventana
         setLocationRelativeTo(null);
 
-        // Panel para los intentos
-        JPanel guessPanel = new JPanel(new GridLayout(filas, columnas, 5, 5)); // Espaciado entre celdas
-        guessPanel.setBackground(Color.DARK_GRAY); // Fondo gris oscuro
-        guessPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Margen alrededor del panel
+        JPanel guessPanel = new JPanel(new GridLayout(filas, columnas, 5, 5));
+        guessPanel.setBackground(Color.DARK_GRAY);
+        guessPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         guessFields = new JTextField[filas][columnas];
 
@@ -59,15 +72,14 @@ public class Juego extends JFrame {
                 guessFields[row][col].setEditable(false);
                 guessFields[row][col].setBackground(Color.BLACK);
                 guessFields[row][col].setForeground(Color.WHITE);
-                guessFields[row][col].setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // Borde gris
+                guessFields[row][col].setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
                 guessPanel.add(guessFields[row][col]);
             }
         }
 
-        // Panel para el teclado virtual
-        JPanel keyboardPanel = new JPanel(new GridLayout(3, 10, 5, 5)); // Espaciado entre botones
-        keyboardPanel.setBackground(Color.DARK_GRAY); // Fondo gris oscuro
-        keyboardPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Margen alrededor del panel
+        JPanel keyboardPanel = new JPanel(new GridLayout(3, 10, 5, 5));
+        keyboardPanel.setBackground(Color.DARK_GRAY);
+        keyboardPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         String[] keys = {
                 "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
@@ -79,9 +91,9 @@ public class Juego extends JFrame {
         for (int i = 0; i < keys.length; i++) {
             keyboardButtons[i] = new JButton(keys[i]);
             keyboardButtons[i].setFont(new Font("SansSerif", Font.BOLD, 20));
-            keyboardButtons[i].setBackground(Color.GRAY); // Color gris oscuro para las teclas
-            keyboardButtons[i].setForeground(Color.WHITE); // Color de texto blanco para las teclas
-            keyboardButtons[i].setFocusPainted(false); // Eliminar el borde de enfoque
+            keyboardButtons[i].setBackground(Color.GRAY);
+            keyboardButtons[i].setForeground(Color.WHITE);
+            keyboardButtons[i].setFocusPainted(false);
             keyboardButtons[i].addActionListener(new KeyboardButtonListener());
             keyboardPanel.add(keyboardButtons[i]);
         }
@@ -89,13 +101,12 @@ public class Juego extends JFrame {
         add(guessPanel, BorderLayout.CENTER);
         add(keyboardPanel, BorderLayout.SOUTH);
 
-        // KeyListener para capturar la entrada desde el teclado
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 char keyChar = e.getKeyChar();
                 if (Character.isLetter(keyChar)) {
-                    keyChar = Character.toUpperCase(keyChar); // Convertir a mayúscula
+                    keyChar = Character.toUpperCase(keyChar);
                     if (currentCol < columnas) {
                         guessFields[currentRow][currentCol].setText(String.valueOf(keyChar));
                         currentCol++;
@@ -120,7 +131,6 @@ public class Juego extends JFrame {
         setFocusTraversalKeysEnabled(false);
         setVisible(true);
 
-        // Request focus on the JFrame
         requestFocusInWindow();
     }
 
@@ -131,14 +141,10 @@ public class Juego extends JFrame {
                 guess.append(guessFields[currentRow][col].getText());
             }
             if (guess.length() == columnas) {
-                System.out.println("Word formed: " + guess.toString()); // Print the formed word
+                System.out.println("Word formed: " + guess.toString());
                 checkGuess(guess.toString());
                 currentRow++;
                 currentCol = 0;
-
-                if (currentRow == filas) {
-                    showEndWindow();
-                }
             } else {
                 JOptionPane.showMessageDialog(this, "Please enter a 5-letter word.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
             }
@@ -146,9 +152,6 @@ public class Juego extends JFrame {
     }
 
     private void checkGuess(String guess) {
-        System.out.println("Word to guess: " + wordToGuess); // Print the word to guess
-        System.out.println("Word formed: " + guess); // Print the formed word
-
         List<EstadoLetra> estados = ValidarObjeto.validarLetra(wordToGuess, guess);
         boolean isCorrect = true;
 
@@ -175,7 +178,6 @@ public class Juego extends JFrame {
     }
 
     private void showCongratulationsWindow() {
-        // Create a summary of the guesses
         StringBuilder summary = new StringBuilder("<html>Resumen de intentos:<br>");
         for (int row = 0; row < currentRow; row++) {
             summary.append("Intento ").append(row + 1).append(": ");
@@ -196,7 +198,7 @@ public class Juego extends JFrame {
     }
 
     private void showEndWindow() {
-        JOptionPane.showMessageDialog(this, "Game Over! You've used all attempts.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        new EndGameWindow(this).setVisible(true);
     }
 
     public void resetGame() {
@@ -219,7 +221,7 @@ public class Juego extends JFrame {
         }
 
         if (!palabrasMayusculas.isEmpty()) {
-            this.wordToGuess = palabrasMayusculas.get(0); // Assuming you want to use the first word
+            this.wordToGuess = palabrasMayusculas.get(0);
         } else {
             throw new RuntimeException("No se pudo obtener una palabra de la base de datos.");
         }
